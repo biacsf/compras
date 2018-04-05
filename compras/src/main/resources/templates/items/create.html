@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Inserção de items</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <form action="#" th:action="@{/items/item}" th:object="${item}" method="post">
+
+	<div>
+		<label>Descrição:</label>
+        <input type="text" class="form-control" th:field="*{descricao}" th:errorclass="has-error"/>
+        <span class="help-block" th:if="${#fields.hasErrors('descricao')}">
+         <ul>
+             <li th:each="err : ${#fields.errors('descricao')}" th:text="${err}"/>
+         </ul>
+      </span>
+	</div>
+	<input type="submit" value="Submit" />
+	</form>
+</body>
+</html>
