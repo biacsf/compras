@@ -1,9 +1,11 @@
 package com.b2w.planetas.controller;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -30,51 +32,71 @@ import com.b2w.planetas.service.PlanetaService;
 @WebMvcTest(controllers = PlanetaController.class)
 public class PlanetaControllerTest {
 
-    private MockMvc mockMvc;
+	private MockMvc mockMvc;
 
-    @MockBean
-    private PlanetaService planetaService;
+	@MockBean
+	private PlanetaService planetaService;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+	@Autowired
+	private WebApplicationContext webApplicationContext;
 
-    Planeta terra;
-    Planeta marte;
+	Planeta terra;
+	Planeta marte;
 
-    @Before
-    public void setUp() throws Exception {
-	MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 
-	mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
 
-	terra = new Planeta("Terra", "Diversificado", "Florestas", 2);
-	marte = new Planeta("Marte", "Seco", "Alcalino", 1);
-    }
+		terra = new Planeta("Terra", "Diversificado", "Florestas", 2);
+		marte = new Planeta("Marte", "Seco", "Alcalino", 1);
+	}
 
-    @Test
-    public void testListarPlanetas() throws Exception {
+	@Test
+	public void testListarPlanetas() throws Exception {
 
-	when(planetaService.listar()).thenReturn(Arrays.asList(marte, terra));
+		when(planetaService.listar()).thenReturn(Arrays.asList(marte, terra));
 
-	this.mockMvc.perform(get("/planetas")).andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-		.andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
-    }
+		this.mockMvc.perform(get("/planetas")).andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+				.andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(2)));
+	}
 
-    @Test
-    public void testBuscarPlanetaPorNome() throws Exception {
+	@Test
+	public void testBuscarPlanetaPorNome() throws Exception {
 
-	when(planetaService.buscarPorNome(anyString())).thenReturn(marte);
+		when(planetaService.buscarPorNome(anyString())).thenReturn(marte);
 
-	this.mockMvc.perform(get("/planetas/nome/Marte").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)));
+		this.mockMvc.perform(get("/planetas/nome/Marte").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.nome", is("Marte")));
 
-    }
+	}
 
-    @Test
-    public void testBuscarPlanetaPorId() throws Exception {
+	@Test
+	public void testBuscarPlanetaPorId() throws Exception {
 
-	when(planetaService.buscarPorId(anyString())).thenReturn(marte);
+		when(planetaService.buscarPorId(anyString())).thenReturn(marte);
 
-	this.mockMvc.perform(get("/planetas/nome/Marte").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$", hasSize(1)));
+		this.mockMvc.perform(get("/planetas/1234").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.nome", is("Marte")));
 
-    }
+	}
+	
+	@Test
+	public void testAdicionarPlaneta() throws Exception {
+
+		this.mockMvc.perform(post("/planetas").contentType(MediaType.APPLICATION_JSON)
+                .content("{\\\"nome\\\":\\\"Terra\\\",\\\"clima\\\":\\\"temperado\\\",\\\"terreno\\\":\\\"irregular\\\"}"))
+		.andExpect(status().isOk());
+
+	}
+	
+	@Test
+	public void testRemoverPlaneta() throws Exception {
+
+		this.mockMvc.perform(delete("/planetas/1234").contentType(MediaType.APPLICATION_FORM_URLENCODED))
+		.andExpect(status().isOk());
+
+	}
 }

@@ -17,32 +17,32 @@ import com.b2w.planetas.service.PlanetaService;
 @RequestMapping("/planetas")
 public class PlanetaController {
 
-    @Autowired
-    PlanetaService planetaService;
+	@Autowired
+	PlanetaService planetaService;
 
-    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void addPlaneta(@RequestBody Planeta planeta) {
-	planetaService.addPlaneta(planeta);
-    }
+	@RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void addPlaneta(@RequestBody Planeta planeta) {
+		planetaService.addPlaneta(planeta);
+	}
 
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Planeta> listar() {
-	return planetaService.listar();
-    }
+	@RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<Planeta> listar() {
+		return planetaService.listar();
+	}
 
-    @RequestMapping(value = "/nome/{nome}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Planeta buscarPorNome(@PathVariable String nome) {
-	return planetaService.buscarPorNome(nome);
-    }
+	@RequestMapping(value = "/nome/{nome}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Planeta buscarPorNome(@PathVariable String nome) {
+		return planetaService.buscarPorNome(nome);
+	}
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Planeta buscarPorId(@PathVariable String id) {
-	return planetaService.buscarPorId(id);
-    }
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	public Planeta buscarPorId(@PathVariable String id) {
+		return planetaService.buscarPorId(id);
+	}
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Planeta planeta) {
-	planetaService.delete(planeta);
-    }
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void delete(@PathVariable("id") String id) {
+		planetaService.delete(id);
+	}
 
 }
