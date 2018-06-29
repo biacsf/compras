@@ -1,13 +1,19 @@
 package com.b2w.planetas.entity;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.b2w.planetas.api.StarWarsWSClient;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Document(collection = "planetas")
 public class Planeta {
+    
+    @Autowired
+    StarWarsWSClient starWarsWSClient;
     
     public Planeta(String nome, String clima, String terreno, Integer qtdAparicoesFilmes){
 	this.nome = nome;
@@ -28,8 +34,12 @@ public class Planeta {
     @Getter @Setter
     private String terreno;
     
-    @Getter @Setter
+    @Getter
     private Integer qtdAparicoesFilmes;
+    
+    public void setQtdAparicoesFilmes(Integer qtdAparicoesFilmes) {
+        this.qtdAparicoesFilmes = starWarsWSClient.buscaQuantidadeAparicoesEmFilmes(this.nome);
+    }
 
     @Override
     public String toString() {

@@ -2,52 +2,62 @@ package com.b2w.planetas.api;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Component
 public class StarWarsWSClient {
 
-	@Value("${starwars.api.server.base_uri}")
-	private String baseApiUri;
+    @Value("${starwars.api.server.base_uri}")
+    private String baseApiUri;
 
-	public static void buscaPlaneta(String nomePlaneta) {
+    @Autowired
+    private RestTemplate restTemplate;
 
-		RestTemplate restTemplate = new RestTemplate(); 
+    private final static HttpEntity<String> entity;
+    
+    private final Logger logger = LoggerFactory.getLogger(StarWarsWSClient.class);
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		headers.add("user-agent",
-				"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
-		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
-		ResponseEntity<String> response = restTemplate.exchange("https://swapi.co/api/planets/?search="+nomePlaneta, HttpMethod.GET,
-				entity, String.class);
-		
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode root = null;
-		try {
-			root = mapper.readTree(response.getBody());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		int quantidade = root.findPath("films").size();
+    static {
+	HttpHeaders headers = new HttpHeaders();
+	headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+	headers.add("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.99 Safari/537.36");
+	entity = new HttpEntity<String>("parameters", headers);
+    }
 
+    public Integer buscaQuantidadeAparicoesEmFilmes(String nomePlaneta) {
 
+	ObjectMapper mapper = new ObjectMapper();
+	JsonNode root = null;
+
+	ResponseEntity<String> response = restTemplate.exchange(baseApiUri + "planets/?search=" + nomePlaneta, HttpMethod.GET, entity, String.class);
+
+	try {
+	    root = mapper.readTree(response.getBody());
+
+	} catch (IOException e) {
+	    logger.error("Erro ao consultar a API do StarWars e buscar informacoes do planeta: "+nomePlaneta);
+	    return null;
 	}
 
-	public static void main(String[] args) {
-		buscaPlaneta("Yavin IV");
-	}
+	int quantidade = root.findPath("films").size();
 
+	return quantidade;
+
+    }
+    
+    
 }
