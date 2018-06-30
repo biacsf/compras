@@ -4,32 +4,49 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
-import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.client.RestTemplate;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class StarWarsWSClientTest {
     
-    private RestTemplate restTemplate;
+	@Autowired
+    private StarWarsWSClient starWarsWSClient;
+    
 
-    @Before
-    public void beforeTest() {
-        restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(Arrays.asList(new MappingJackson2HttpMessageConverter()));
+    @Test
+    public void testGetQuantidadeFilmesPorPlaneta() throws IOException {
+    	int quantidade = starWarsWSClient.buscaQuantidadeAparicoesEmFilmes("Tatooine");
+
+        assertThat(quantidade, equalTo(5));
     }
     
     @Test
-    public void testGetQuantidadeFilmesPorPlaneta() throws IOException {
-        final ResponseEntity<String> response = restTemplate.getForEntity("https://swapi.co/api/planets/?search=Yavin IV", String.class);
+    public void testGetPlaneta() throws IOException {
+    	PlanetSwapi planeta = starWarsWSClient.recuperaPlaneta("Alderaan");
 
-        ObjectMapper mapper = new ObjectMapper();
-        int quantidade = mapper.readTree(response.getBody()).path("filmes").size();
-        assertThat(quantidade, equalTo(1));
+        assertThat(planeta.getName(), equalTo("Alderaan"));
+        assertThat(planeta.getClimate(), equalTo("temperate"));
+        assertThat(planeta.getDiameter(), equalTo("12500"));
+    }
+    
+    @Test
+    public void testGetPlanetaNaoExistente() throws IOException {
+    	PlanetSwapi planeta = starWarsWSClient.recuperaPlaneta("XXXXYYYYY");
+
+        assertThat(planeta, equalTo(null));
+    }
+    
+    @Test
+    public void testGetQuantidadeFilmesPorPlanetaNaoExistente() throws IOException {
+    	Integer quantidade = starWarsWSClient.buscaQuantidadeAparicoesEmFilmes("XXXXYYYYY");
+
+        assertThat(quantidade, equalTo(null));
     }
 }

@@ -1,6 +1,7 @@
 package com.b2w.planetas.controller;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -27,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.b2w.planetas.entity.Planeta;
 import com.b2w.planetas.service.PlanetaService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(controllers = PlanetaController.class)
@@ -86,8 +88,11 @@ public class PlanetaControllerTest {
 	@Test
 	public void testAdicionarPlaneta() throws Exception {
 
+		String body = (new ObjectMapper()).valueToTree(terra).toString();
+
+
 		this.mockMvc.perform(post("/planetas").contentType(MediaType.APPLICATION_JSON)
-                .content("{\\\"nome\\\":\\\"Terra\\\",\\\"clima\\\":\\\"temperado\\\",\\\"terreno\\\":\\\"irregular\\\"}"))
+                .content(body))
 		.andExpect(status().isOk());
 
 	}

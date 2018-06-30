@@ -1,5 +1,8 @@
 package com.b2w.planetas.repository;
 
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.assertThat;
+
 import java.util.List;
 
 import org.junit.Before;
@@ -18,17 +21,24 @@ public class PlanetaRepositoryTests {
 	@Autowired
 	private PlanetaRepository planetaRepository;
 
+	Planeta terra;
+	Planeta marte;
+
 	@Before
-	public void setUp() {
+	public void setUp() throws Exception {
 
-		Planeta planeta = new Planeta("Planeta 1", "Seco", "pedregoso", 1);
+		terra = new Planeta("Terra", "Diversificado", "Florestas", 2);
+		marte = new Planeta("Marte", "Seco", "Alcalino", 1);
 
-		planetaRepository.save(planeta);
 	}
 
 	@Test
-	public void findByName() {
+	public void testSaveAndFindAll() {
+		planetaRepository.save(terra);
+
 		List<Planeta> result = planetaRepository.findAll();
-		// assertThat(result, is(1));
+		assertThat(result, hasItem(terra));
 	}
+
+
 }
