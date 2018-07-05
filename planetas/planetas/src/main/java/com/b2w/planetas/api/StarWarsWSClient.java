@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.node.MissingNode;
 
 @Component
 public class StarWarsWSClient {
+	
+	private final Logger logger = LoggerFactory.getLogger(StarWarsWSClient.class);
 
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
@@ -35,7 +37,6 @@ public class StarWarsWSClient {
 	@Autowired
 	private RestTemplate restTemplate;
 
-	private final Logger logger = LoggerFactory.getLogger(StarWarsWSClient.class);
 
 	private HttpHeaders createHttpHeaders() {
 		HttpHeaders headers = new HttpHeaders();
@@ -54,6 +55,8 @@ public class StarWarsWSClient {
 	 * @return
 	 */
 	public Integer buscaQuantidadeAparicoesEmFilmes(String nomePlaneta) {
+		
+		logger.info("Consulta o planeta: "+ nomePlaneta+ " na api https://swapi.co/api/ ");
 
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode root = null;
@@ -63,14 +66,17 @@ public class StarWarsWSClient {
 
 		try {
 			root = mapper.readTree(response.getBody());
+			logger.info("Planeta retornado pela API: "+response.getBody());
 
 		} catch (IOException e) {
 			logger.error("Erro ao consultar a API do StarWars e buscar informacoes do planeta: " + nomePlaneta);
 			return null;
 		}
 		if(root.findPath("films").equals(MissingNode.getInstance())) {
+			logger.info("Nao encontrou o no films no JSON retornado para o planeta: "+nomePlaneta);
 			return null;
 		}else {
+			logger.info("Encontrou o no films no JSON retornado para o planeta: "+nomePlaneta);
 			return root.findPath("films").size();
 		}
 
@@ -84,14 +90,16 @@ public class StarWarsWSClient {
 	 * @return
 	 */
 	public PlanetSwapi recuperaPlaneta(String nomePlaneta) {
-
+		logger.info("Consulta o planeta: "+ nomePlaneta+ " na api https://swapi.co/api/ ");
 		ResponseEntity<SearchResponse> response = restTemplate.exchange(baseApiUri + "planets/?search=" + nomePlaneta,
 				HttpMethod.GET, new HttpEntity<String>("parameters", createHttpHeaders()), SearchResponse.class);
 
 		if (response.getBody() != null && response.getBody().getResults() != null
 				&& !response.getBody().getResults().isEmpty()) {
+			logger.info("Planeta retornado pela API: "+response.getBody().getResults().get(0));
 			return response.getBody().getResults().get(0);
 		} else {
+			logger.error("Nao encontrou o planeta: " + nomePlaneta+" na API");
 			return null;
 		}
 

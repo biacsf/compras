@@ -2,6 +2,8 @@ package com.b2w.planetas.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +19,20 @@ public class PlanetaServiceImpl implements PlanetaService {
 
 	@Autowired
 	StarWarsWSClient starWarsWSClient;
+	
+	private final Logger logger = LoggerFactory.getLogger(PlanetaServiceImpl.class);
 
 	/**
 	 * db.planetas.insert({nome: "?", clima: "?", terreno: "?"})
 	 */
 	@Override
 	public void addPlaneta(Planeta planeta) {
+		
+		logger.info("Salva o planeta: "+planeta+" na base de dados.");
 
 		planeta.setQtdAparicoesFilmes(starWarsWSClient.buscaQuantidadeAparicoesEmFilmes(planeta.getNome()));
+		
+		logger.info("Encontrou: "+planeta.getQtdAparicoesFilmes()+" aparicoes em filmes do planeta: "+planeta.getNome()+" na API Swapi");
 
 		planetaRepository.save(planeta);
 	}

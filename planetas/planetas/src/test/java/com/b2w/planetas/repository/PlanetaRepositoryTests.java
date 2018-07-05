@@ -1,7 +1,10 @@
 package com.b2w.planetas.repository;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,20 +37,27 @@ public class PlanetaRepositoryTests {
 	}
 
 	@Test
-	public void testSaveAndFindAll() {
-		planetaRepository.save(terra);
+	public void testSaveAndFindAllAndDelete() {
+		Planeta planeta = planetaRepository.save(terra);
 
 		List<Planeta> result = planetaRepository.findAll();
 		assertThat(result, hasItem(terra));
+		
+		Optional<Planeta> resultAfterDelete = planetaRepository.findById(planeta.getId());
+		assertTrue(resultAfterDelete.isPresent());
 	}
 	
 	@Test
-	public void testSaveAndFindById() {
+	public void testSaveAndFindByIdAndDelete() {
 		Planeta planeta = planetaRepository.save(terra);
 
-		Optional<Planeta> result = planetaRepository.findById(planeta.getId());
-		assertThat(result.get().getNome(), is(terra.getNome()));
+		Optional<Planeta> resultAfterSave = planetaRepository.findById(planeta.getId());
+		assertThat(resultAfterSave.get().getNome(), is(terra.getNome()));
+		
+		planetaRepository.delete(planeta);
+		
+		Optional<Planeta> resultAfterDelete = planetaRepository.findById(planeta.getId());
+		assertFalse(resultAfterDelete.isPresent());
 	}
-
 
 }
