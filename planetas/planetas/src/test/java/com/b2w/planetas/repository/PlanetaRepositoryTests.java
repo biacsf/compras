@@ -43,16 +43,18 @@ public class PlanetaRepositoryTests {
 		List<Planeta> result = planetaRepository.findAll();
 		assertThat(result, hasItem(terra));
 		
+		planetaRepository.delete(planeta);
+		
 		Optional<Planeta> resultAfterDelete = planetaRepository.findById(planeta.getId());
-		assertTrue(resultAfterDelete.isPresent());
+		assertFalse(resultAfterDelete.isPresent());
 	}
 	
 	@Test
 	public void testSaveAndFindByIdAndDelete() {
-		Planeta planeta = planetaRepository.save(terra);
+		Planeta planeta = planetaRepository.save(marte);
 
 		Optional<Planeta> resultAfterSave = planetaRepository.findById(planeta.getId());
-		assertThat(resultAfterSave.get().getNome(), is(terra.getNome()));
+		assertThat(resultAfterSave.get().getNome(), is(marte.getNome()));
 		
 		planetaRepository.delete(planeta);
 		

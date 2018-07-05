@@ -6,7 +6,7 @@ import com.b2w.planetas.entity.Planeta;
 
 public interface PlanetaService {
 
-    public void addPlaneta(Planeta planeta);
+    public Planeta addPlaneta(Planeta planeta);
 
     public List<Planeta> listar();
 

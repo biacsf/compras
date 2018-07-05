@@ -1,15 +1,13 @@
-package com.b2w.planetas.api;
+package com.b2w.planetas.dto;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.b2w.planetas.api.PlanetSwapi;
 
 import lombok.Getter;
 import lombok.Setter;
 
-@JsonIgnoreProperties
-public class SearchResponse {
-
+public class JsonResponse {
 	@Getter
 	@Setter
 	private int count;

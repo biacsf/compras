@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.b2w.planetas.dto.JsonResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.MissingNode;
@@ -91,8 +92,8 @@ public class StarWarsWSClient {
 	 */
 	public PlanetSwapi recuperaPlaneta(String nomePlaneta) {
 		logger.info("Consulta o planeta: "+ nomePlaneta+ " na api https://swapi.co/api/ ");
-		ResponseEntity<SearchResponse> response = restTemplate.exchange(baseApiUri + "planets/?search=" + nomePlaneta,
-				HttpMethod.GET, new HttpEntity<String>("parameters", createHttpHeaders()), SearchResponse.class);
+		ResponseEntity<JsonResponse> response = restTemplate.exchange(baseApiUri + "planets/?search=" + nomePlaneta,
+				HttpMethod.GET, new HttpEntity<String>("parameters", createHttpHeaders()), JsonResponse.class);
 
 		if (response.getBody() != null && response.getBody().getResults() != null
 				&& !response.getBody().getResults().isEmpty()) {

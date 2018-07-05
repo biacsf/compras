@@ -1,6 +1,7 @@
 package com.b2w.planetas.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,22 +20,23 @@ public class PlanetaServiceImpl implements PlanetaService {
 
 	@Autowired
 	StarWarsWSClient starWarsWSClient;
-	
+
 	private final Logger logger = LoggerFactory.getLogger(PlanetaServiceImpl.class);
 
 	/**
 	 * db.planetas.insert({nome: "?", clima: "?", terreno: "?"})
 	 */
 	@Override
-	public void addPlaneta(Planeta planeta) {
-		
-		logger.info("Salva o planeta: "+planeta+" na base de dados.");
+	public Planeta addPlaneta(Planeta planeta) {
+
+		logger.info("Salva o planeta: " + planeta + " na base de dados.");
 
 		planeta.setQtdAparicoesFilmes(starWarsWSClient.buscaQuantidadeAparicoesEmFilmes(planeta.getNome()));
-		
-		logger.info("Encontrou: "+planeta.getQtdAparicoesFilmes()+" aparicoes em filmes do planeta: "+planeta.getNome()+" na API Swapi");
 
-		planetaRepository.save(planeta);
+		logger.info("Encontrou: " + planeta.getQtdAparicoesFilmes() + " aparicoes em filmes do planeta: "
+				+ planeta.getNome() + " na API Swapi");
+
+		return planetaRepository.save(planeta);
 	}
 
 	/**
@@ -58,7 +60,12 @@ public class PlanetaServiceImpl implements PlanetaService {
 	 */
 	@Override
 	public Planeta buscarPorId(String id) {
-		return planetaRepository.findById(id).get();
+		Optional<Planeta> planeta = planetaRepository.findById(id);
+		if (planeta.isPresent()) {
+			return planeta.get();
+		}
+		return null;
+
 	}
 
 	/**
